@@ -225,7 +225,7 @@ export default {
         background: rgba(7, 17, 27, 0)
       .detail-wrapper
         width: 100%
-        min-height: 80%
+        min-height: 100%
         .detail-main
           margin-top: 64px
           padding-bottom: 64px
@@ -293,7 +293,7 @@ export default {
         display: block
         width: 32px
         height: 32px
-        margin: -50px auto 0 auto
+        margin: -64px auto 0 auto
         clear: both
         font-size: 32px
 </style>
