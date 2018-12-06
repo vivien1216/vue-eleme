@@ -32,27 +32,38 @@
                     <span class="newPrice">¥{{food.price}}</span>
                     <span class="oldPrice" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
                  </div>
+                 <div class="cartcontrol-wrapper">
+                   <cartcontrol  @add="addFood" :food="food"></cartcontrol>
+                 </div>
                </div>
              </li>
            </ul>
         </li>
       </ul>
     </div>
-
+    <shopcart  ref="shopcart" :select-foods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice = "seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import Bscroll from 'better-scroll'
+import shopcart from 'components/Shopcart/shopcart'
+import cartcontrol from 'components/Cartcontrol/cartcontrol'
+
 
 export default {
   name: 'homeGoods',
+  props: {
+    seller: {
+      type: Object
+    }
+  },
   data () {
     return {
       goods: [],
       listHeight: [],
-	  scrollY: 0
+	    scrollY: 0
     }
   },
   computed: {
@@ -65,6 +76,17 @@ export default {
         }
       }
     return 0;
+    },
+    selectFoods () {
+      let foods = [];
+      this.goods.forEach( (good) => {
+        good.foods.forEach( (food) => {
+          if(food.count) {
+            foods.push(food)
+          }
+        })
+      })
+      return foods;
     }
   },
   created () {
@@ -90,6 +112,16 @@ export default {
       this.foodsScroll.scrollToElement(el,300)
     },
 
+     addFood(target) {
+        this._drop(target);
+      },
+      _drop(target) {
+        // 体验优化,异步执行下落动画
+        this.$nextTick(() => {
+          this.$refs.shopcart.drop(target);
+        });
+      },
+
      _initScroll() {
       this.menuWrapper = new Bscroll(this.$refs.menuWrapper, {
         click: true
@@ -113,6 +145,10 @@ export default {
           this.listHeight.push(height);
         }
       }
+  },
+  components: {
+    shopcart,
+    cartcontrol
   }
 }
 </script>
@@ -220,4 +256,10 @@ export default {
             margin-right: 8px
           .oldPrice
             text-decoration: line-through
+        .cartcontrol-wrapper
+          position: absolute
+          right: 0
+          bottom: 18px
+          z-index: 20
+
 </style>
