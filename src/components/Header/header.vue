@@ -97,7 +97,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-@import '../../assets/style/mixin.styl'
+@import '~style/mixin.styl'
 .header
     position: relative
     overflow: hidden
