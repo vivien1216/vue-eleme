@@ -5,7 +5,7 @@
         <div class="title">
           <div class="text">{{seller.name}}</div>
           <div class="star-wrapper">
-            <star :size="48" :score="seller.score"></star>
+            <star :size="36" :score="seller.score"></star>
             <span class="rate-count">{{seller.ratingCount}}</span>
             <span class="sell-count">月售{{seller.sellCount}}单</span>
           </div>
