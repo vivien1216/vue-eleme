@@ -1,6 +1,6 @@
 # vue-eleme
 
-> A Vue.js project
+> 最近想学vue,所以使用vue开发了高仿饿了么点餐系统来练练手,不得不说vue真是一个很不错的框架。
 
 ## Build Setup
 
