@@ -4,7 +4,11 @@
 
 ## 主要依赖
     * 基于vue@2.5   
-    * 使用vue-cli搭建项目框架
+    * 使用vue-cli搭建项目框架   
+    * 使用vue-router进行页面路由切换    
+    * 使用axios进行数据请求
+    * 使用stylus进行样式编写
+    * 使用better-scroll进行联动滑动
 ## Build Setup
 
 ``` bash
