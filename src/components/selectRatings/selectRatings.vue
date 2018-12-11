@@ -116,6 +116,7 @@ methods: {
       border-bottom: 1px solid rgba(7, 17, 27, 0.1)
       color: rgb(147, 153, 159)
       font-size: 0
+      text-align: left
       &.on
         .iconfont
           color: #00c850

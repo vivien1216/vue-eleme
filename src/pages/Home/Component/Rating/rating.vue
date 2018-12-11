@@ -31,16 +31,17 @@
      <div class="divider"></div>
      
      <div class="evalution">
-       <div class="classify">
-          <span class="item" v-for="(item,index) in classifyArr"  :class="{'active':item.active,'bad':index==2,'badActive':item.active&&index==2}" @click="filterEvel(item)">{{item.name}} {{item.count}}</span>
-       </div>
-       <div class="switch">
-         <span class="iconfont">&#xe65d;</span>
-         <span class="text">只看有内容的评价</span>
-       </div>
+       <selectRatings
+        @select="selectRating"
+        @toggle="toggleContent"
+        :selectType="selectType"
+        :onlyContent="onlyContent" :desc="desc"
+        :ratings="ratings"
+       ></selectRatings>
        <div class="eval-list">
          <ul>
-           <li class="eval" v-for="item in ratings">
+           <li class="eval" v-for="item in ratings"
+            v-show="needShow(item.rateType, item.text)">
              <div class="avatar">
                <img :src="item.avatar" width="28" height="28" />
              </div>
@@ -57,7 +58,8 @@
                  {{item.text}}
                </div>
                <div class="recommend">
-                 <span class="iconfont" v-show="item.recommend.length">&#xe602;</span>
+                 <i class="iconfont" v-show="item.rateType===1">&#xe6a4;</i>
+                 <i class="iconfont icon-thumb_up" v-show="item.rateType===0">&#xe602;</i>
                  <span class="dish"  v-for="dish in item.recommend">{{dish}}</span>
                </div>
              </div>
@@ -71,46 +73,28 @@
 
 <script>
 import axios from 'axios'
-import star from 'components/Star/star'
 import BScroll from 'better-scroll'
+import star from 'components/Star/star'
+import selectRatings from 'components/selectRatings/selectRatings'
+
+const ALL = 2;
+
 export default {
   name: 'homeRating',
   data () {
     return {
       ratings: [],
       seller: {},
-      classifyArr: [{
-        name: '全部',
-        count: 0,
-        active: true
-      }, {
-        name: '推荐',
-        count: 0,
-        active: false
-      }, {
-        name: '吐槽',
-        count: 0,
-        active: false
-      }],
+      selectType: ALL,
+      onlyContent: true,
+      desc: {
+        all: '全部',
+        positive: '推荐',
+        negative: '吐槽'
+      },
       evelflag: true
     }
    },
-  computed: {
-    evelArr() {
-      let selectIndex = 0
-      this.classifyArr.forEach((data, index) => {
-        if (data.active) {
-          selectIndex = index
-        }
-      })
-      if (this.scroll) {
-        this.$nextTick(() => {
-          this.scroll.refresh()
-        })
-      }
-      return selectIndex ? this.ratings.filter((data) => this.evelflag ? data.rateType === selectIndex - 1 && data.text : data.rateType === selectIndex - 1) : this.ratings.filter((data) => this.evelflag ? data.text : true)
-    }
-  },
   methods: {
    getHomeRatings () {
      axios.get('/api/rating.json')
@@ -118,7 +102,6 @@ export default {
         res = res.data
         if(res.ret && res.data) {
           this.ratings = res.data
-          this._initClassifyArr()
            this.$nextTick(() => {
             this.scroll = new BScroll(this.$refs.ratingsWrapper, {
               click: true
@@ -136,29 +119,36 @@ export default {
         }
       })
    },
-    _initClassifyArr() {
-      this.classifyArr.forEach((data, index) => {
-        if (index) {
-          data.count = this.ratings.filter((temp) => temp.rateType === index - 1).length
-        } else {
-          data.count = this.ratings.length
-        }
-      })
-    },
-    filterEvel(item) {
-      this.classifyArr.forEach((data) => {
-        data.active = false
-      })
-      item.active = true
+  needShow(type, text) {
+   if (this.onlyContent && !text) {
+      return false;
     }
-  
+    if (this.selectType === ALL) {
+      return true;
+    } else {
+     return type === this.selectType;
+    }
   },
+  selectRating(type) {
+    this.selectType = type;
+    this.$nextTick(() => {
+      this.scroll.refresh();
+    });
+  },
+  toggleContent() {
+    this.onlyContent = !this.onlyContent;
+    this.$nextTick(() => {
+      this.scroll.refresh();
+    });
+  }
+},
   created () {
     this.getHomeRatings();
     this.getHomeSeller();
   },
   components: {
-    star
+    star,
+    selectRatings
   }
 }
 </script>
@@ -219,34 +209,6 @@ export default {
 	.evalution
 	  padding: 18px 0
 	  position: relative
-	  .classify
-	    padding-bottom: 18px
-	    margin: 0 18px
-	    .item
-          display: inline-block
-          font-size: 12px
-          padding: 8px 12px
-          line-height: 16px
-          background: rgba(0,160,220,0.2)
-          color: rgb(77,85,95)
-          margin-right: 8px
-          &.active
-            color: white
-            background: rgb(0,169,220)
-          &.bad
-            background: rgba(77,85,93,0.2)
-          &.badActive
-            background: #4d555d
-    .switch
-        font-size: 12px
-        width: 100%
-        padding: 12px 0 12px 18px
-        color: rgb(147,153,159)
-        border-bottom: 1px solid rgba(7,17,27,0.1)
-        text-align: left
-        .iconfont
-          font-size: 16px
-	      vertical-align: middle
 	.eval-list
     .eval
       display: flex
@@ -291,6 +253,8 @@ export default {
             font-size: 12px
             color: rgb(0,160,220)
             line-height: 16px
+          .icon-thumb_up
+             color: rgb(0, 160, 220)
           .dish
             display: inline-block
             font-size: 9px
